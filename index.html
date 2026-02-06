@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlueShift — iMessage for GoHighLevel</title>
 <meta name="description" content="Send iMessage directly from GoHighLevel. 98% open rates. No subscriptions. Pay per message. The ultimate CRM messaging upgrade.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -12,411 +15,240 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        blue: {
-          DEFAULT: '#007AFF',
-          50: '#E5F2FF',
-          100: '#CCE4FF',
-          200: '#99CAFF',
-          300: '#66AFFF',
-          400: '#3395FF',
-          500: '#007AFF',
-          600: '#0062CC',
-          700: '#004999',
-          800: '#003166',
-          900: '#001833',
-        },
-        dark: {
-          DEFAULT: '#050510',
-          50: '#0a0a1a',
-          100: '#0f0f24',
-          200: '#14142e',
-          300: '#1a1a3e',
-        },
-        imsg: {
-          blue: '#007AFF',
-          cyan: '#34AADC',
-          teal: '#1A8CFF',
-          gray: '#E9E9EB',
-          darkgray: '#3A3A3C',
-        }
+        blue: { DEFAULT:'#007AFF',50:'#E5F2FF',100:'#CCE4FF',200:'#99CAFF',300:'#66AFFF',400:'#3395FF',500:'#007AFF',600:'#0062CC',700:'#004999',800:'#003166',900:'#001833' },
+        dark: { DEFAULT:'#050510',50:'#0a0a1a',100:'#0f0f24',200:'#14142e',300:'#1a1a3e' },
+        imsg: { blue:'#007AFF',cyan:'#34AADC',teal:'#1A8CFF',gray:'#E9E9EB',darkgray:'#3A3A3C' }
       },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-      },
+      fontFamily: { sans: ['Inter','system-ui','-apple-system','sans-serif'] },
     }
   }
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-  /* ===== BASE ===== */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { font-family: 'Inter', sans-serif; }
-  body { overflow-x: hidden; }
+/* ===== BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-family:'Inter',sans-serif;scroll-behavior:smooth}
+body{overflow-x:hidden}
 
-  /* ===== CUSTOM CURSOR ===== */
-  .custom-cursor {
-    width: 20px; height: 20px;
-    border: 2px solid #007AFF;
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 99999;
-    transition: transform 0.15s ease, background 0.15s ease;
-    mix-blend-mode: difference;
-  }
-  .custom-cursor.hover {
-    transform: scale(2.5);
-    background: rgba(0,122,255,0.15);
-    border-color: #34AADC;
-  }
-  @media (max-width: 768px) { .custom-cursor { display: none; } }
+/* ===== SCROLL PROGRESS BAR ===== */
+#scrollProgress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#007AFF,#34AADC,#1A8CFF);z-index:99999;width:0%;transition:width .05s linear}
 
-  /* ===== NOISE OVERLAY ===== */
-  .noise-overlay {
-    position: fixed; inset: 0; z-index: 9998;
-    pointer-events: none; opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-  }
+/* ===== NOISE OVERLAY ===== */
+.noise-overlay{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat}
 
-  /* ===== GLASSMORPHISM ===== */
-  .glass {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  html:not(.dark) .glass {
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(0,0,0,0.06);
-  }
+/* ===== GLASSMORPHISM ===== */
+.glass{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+html:not(.dark) .glass{background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.06)}
+.glass-card{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.06);transition:all .4s cubic-bezier(.4,0,.2,1)}
+.glass-card:hover{background:rgba(255,255,255,.07);border-color:rgba(0,122,255,.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,122,255,.1)}
+html:not(.dark) .glass-card{background:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.08)}
+html:not(.dark) .glass-card:hover{background:rgba(255,255,255,.95);box-shadow:0 20px 60px rgba(0,122,255,.12)}
 
-  .glass-card {
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .glass-card:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(0,122,255,0.3);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 60px rgba(0,122,255,0.1);
-  }
-  html:not(.dark) .glass-card {
-    background: rgba(255,255,255,0.8);
-    border: 1px solid rgba(0,0,0,0.08);
-  }
-  html:not(.dark) .glass-card:hover {
-    background: rgba(255,255,255,0.95);
-    box-shadow: 0 20px 60px rgba(0,122,255,0.12);
-  }
+/* ===== GRADIENT TEXT ===== */
+.gradient-text{background:linear-gradient(135deg,#007AFF 0%,#34AADC 50%,#1A8CFF 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-white{background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.7) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+html:not(.dark) .gradient-text-white{background:linear-gradient(135deg,#050510 0%,#1a1a3e 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-  /* ===== GRADIENT TEXT ===== */
-  .gradient-text {
-    background: linear-gradient(135deg, #007AFF 0%, #34AADC 50%, #1A8CFF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .gradient-text-white {
-    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  html:not(.dark) .gradient-text-white {
-    background: linear-gradient(135deg, #050510 0%, #1a1a3e 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+/* ===== GLOW BUTTON ===== */
+.glow-btn{position:relative;background:linear-gradient(135deg,#007AFF,#34AADC);transition:all .3s ease;overflow:hidden}
+.glow-btn::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,#007AFF,#34AADC,#1A8CFF);border-radius:inherit;z-index:-1;filter:blur(15px);opacity:0;transition:opacity .3s ease}
+.glow-btn:hover::before{opacity:1}
+.glow-btn:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,122,255,.4)}
+.glow-btn:active{transform:translateY(0)}
+/* ripple */
+.glow-btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);transform:scale(0);animation:rippleAnim .6s ease-out}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
 
-  /* ===== GLOW BUTTON ===== */
-  .glow-btn {
-    position: relative;
-    background: linear-gradient(135deg, #007AFF, #34AADC);
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-  .glow-btn::before {
-    content: '';
-    position: absolute; inset: -2px;
-    background: linear-gradient(135deg, #007AFF, #34AADC, #1A8CFF);
-    border-radius: inherit;
-    z-index: -1;
-    filter: blur(15px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .glow-btn:hover::before { opacity: 1; }
-  .glow-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,122,255,0.4); }
-  .glow-btn:active { transform: translateY(0); }
+/* ===== FLOATING ORBS ===== */
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4;animation:float 20s ease-in-out infinite;pointer-events:none}
+html:not(.dark) .orb{opacity:.15}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(50px,-30px) scale(1.1)}50%{transform:translate(-20px,40px) scale(.95)}75%{transform:translate(30px,20px) scale(1.05)}}
 
-  /* ===== MAGNETIC BUTTON ===== */
-  .magnetic-btn {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+/* ===== PARTICLES ===== */
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
 
-  /* ===== FLOATING ORBS ===== */
-  .orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
-    animation: float 20s ease-in-out infinite;
-  }
-  html:not(.dark) .orb { opacity: 0.15; }
+/* ===== ANIMATED GRADIENT MESH ===== */
+.gradient-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4}
+.gradient-mesh::before{content:'';position:absolute;width:150%;height:150%;top:-25%;left:-25%;background:conic-gradient(from 0deg at 50% 50%,rgba(0,122,255,.08),rgba(52,170,220,.05),rgba(26,140,255,.08),rgba(0,122,255,.03),rgba(52,170,220,.08));animation:meshRotate 30s linear infinite}
+html:not(.dark) .gradient-mesh{opacity:.2}
+@keyframes meshRotate{to{transform:rotate(360deg)}}
 
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(50px, -30px) scale(1.1); }
-    50% { transform: translate(-20px, 40px) scale(0.95); }
-    75% { transform: translate(30px, 20px) scale(1.05); }
-  }
+/* ===== MARQUEE ===== */
+.marquee-track{display:flex;animation:marquee 30s linear infinite;width:max-content}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-  /* ===== MARQUEE ===== */
-  .marquee-track {
-    display: flex;
-    animation: marquee 30s linear infinite;
-    width: max-content;
-  }
-  .marquee-track:hover { animation-play-state: paused; }
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+/* ===== iMESSAGE BUBBLES ===== */
+.imsg-bubble-sent{background:linear-gradient(135deg,#007AFF,#34AADC);color:#fff;border-radius:20px 20px 4px 20px;padding:10px 16px;max-width:260px;font-size:14px;line-height:1.4}
+.imsg-bubble-recv{background:#E9E9EB;color:#1a1a1a;border-radius:20px 20px 20px 4px;padding:10px 16px;max-width:260px;font-size:14px;line-height:1.4}
+.dark .imsg-bubble-recv{background:#3A3A3C;color:#e5e5e5}
 
-  /* ===== iMESSAGE BUBBLES ===== */
-  .imsg-bubble-sent {
-    background: linear-gradient(135deg, #007AFF, #34AADC);
-    color: white;
-    border-radius: 20px 20px 4px 20px;
-    padding: 10px 16px;
-    max-width: 260px;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .imsg-bubble-recv {
-    background: #E9E9EB;
-    color: #1a1a1a;
-    border-radius: 20px 20px 20px 4px;
-    padding: 10px 16px;
-    max-width: 260px;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .dark .imsg-bubble-recv {
-    background: #3A3A3C;
-    color: #e5e5e5;
-  }
+/* ===== TYPING INDICATOR ===== */
+.typing-dot{width:8px;height:8px;background:#8e8e93;border-radius:50%;display:inline-block;animation:typingBounce 1.4s ease-in-out infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
 
-  /* ===== TYPING INDICATOR ===== */
-  .typing-dot {
-    width: 8px; height: 8px;
-    background: #8e8e93;
-    border-radius: 50%;
-    display: inline-block;
-    animation: typingBounce 1.4s ease-in-out infinite;
-  }
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-  }
+/* ===== FAQ ===== */
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1),padding .3s ease}
+.faq-answer.open{max-height:400px}
+.faq-chevron{transition:transform .3s ease}
+.faq-chevron.open{transform:rotate(180deg)}
 
-  /* ===== ACCORDION ===== */
-  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease; }
-  .faq-answer.open { max-height: 400px; }
-  .faq-chevron { transition: transform 0.3s ease; }
-  .faq-chevron.open { transform: rotate(180deg); }
+/* ===== REVEAL SYSTEM — CSS-based with IntersectionObserver ===== */
+/* Elements start visible by default. JS adds .will-reveal, then .revealed when in view. */
+/* This ensures nothing is ever permanently hidden if JS fails. */
+.will-reveal{opacity:0;transform:translateY(40px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.will-reveal.revealed{opacity:1!important;transform:translateY(0)!important}
+.will-reveal.reveal-left{transform:translateX(-40px)}
+.will-reveal.reveal-left.revealed{transform:translateX(0)!important}
+.will-reveal.reveal-right{transform:translateX(40px)}
+.will-reveal.reveal-right.revealed{transform:translateX(0)!important}
+.will-reveal.reveal-scale{transform:scale(.9);opacity:0}
+.will-reveal.reveal-scale.revealed{transform:scale(1)!important}
 
-  /* ===== SCROLL REVEAL ===== */
-  /* Initial state set by GSAP, not CSS, to avoid hidden content if JS fails */
+/* stagger delays */
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}.reveal-d4{transition-delay:.4s}.reveal-d5{transition-delay:.5s}.reveal-d6{transition-delay:.6s}.reveal-d7{transition-delay:.7s}.reveal-d8{transition-delay:.8s}
 
-  /* ===== GRADIENT BORDER ===== */
-  .gradient-border {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-  }
-  .gradient-border::before {
-    content: '';
-    position: absolute; inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, rgba(0,122,255,0.5), rgba(52,170,220,0.2), rgba(0,122,255,0.5));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
+/* ===== GRADIENT BORDER ===== */
+.gradient-border{position:relative;border-radius:16px;overflow:hidden}
+.gradient-border::before{content:'';position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(135deg,rgba(0,122,255,.5),rgba(52,170,220,.2),rgba(0,122,255,.5));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 
-  /* ===== COMPARISON TABLE ===== */
-  .check-icon { color: #34C759; }
-  .x-icon { color: #FF3B30; }
+/* ===== PHONE MOCKUP ===== */
+.phone-mockup{background:linear-gradient(145deg,#1c1c1e,#2c2c2e);border-radius:40px;padding:12px;box-shadow:0 25px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1)}
+html:not(.dark) .phone-mockup{background:linear-gradient(145deg,#e5e5ea,#f2f2f7);box-shadow:0 25px 80px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.8)}
+.phone-screen{background:#000;border-radius:30px;overflow:hidden;position:relative}
+html:not(.dark) .phone-screen{background:#fff}
+.phone-notch{width:120px;height:28px;background:#000;border-radius:0 0 18px 18px;margin:0 auto;position:relative;z-index:10}
+html:not(.dark) .phone-notch{background:#f2f2f7}
 
-  /* ===== HAMBURGER ===== */
-  .hamburger span {
-    display: block;
-    width: 24px; height: 2px;
-    background: currentColor;
-    transition: all 0.3s ease;
-    border-radius: 2px;
-  }
-  .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-  .hamburger.active span:nth-child(2) { opacity: 0; }
-  .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+/* ===== FLOATING BADGES ===== */
+.floating-badge{animation:badgeFloat 6s ease-in-out infinite;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.floating-badge:nth-child(2){animation-delay:-2s}
+.floating-badge:nth-child(3){animation-delay:-4s}
+@keyframes badgeFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(2deg)}}
 
-  /* ===== MOBILE MENU ===== */
-  .mobile-menu {
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .mobile-menu.open { max-height: 400px; }
+/* ===== BEFORE/AFTER SLIDER ===== */
+.comparison-slider{position:relative;overflow:hidden;border-radius:16px;cursor:ew-resize;user-select:none}
+.comparison-slider .slider-line{position:absolute;top:0;bottom:0;width:3px;background:#007AFF;z-index:10;box-shadow:0 0 20px rgba(0,122,255,.5)}
+.comparison-slider .slider-handle{position:absolute;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#007AFF,#34AADC);border:3px solid #fff;z-index:11;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.3);cursor:ew-resize}
+.comparison-slider .side-right{position:absolute;top:0;right:0;bottom:0;overflow:hidden}
 
-  /* ===== SMOOTH TRANSITIONS ===== */
-  html { transition: background-color 0.4s ease, color 0.4s ease; }
+/* ===== TESTIMONIAL CAROUSEL ===== */
+.testimonial-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1)}
 
-  /* ===== STEP CONNECTOR LINE ===== */
-  .step-line {
-    position: absolute;
-    top: 32px; left: 50%; right: -50%;
-    height: 2px;
-    background: linear-gradient(90deg, #007AFF, rgba(0,122,255,0.1));
-  }
+/* ===== WORKFLOW CONNECTOR ===== */
+.workflow-connector{position:relative}
+.workflow-connector::after{content:'';position:absolute;top:50%;right:-100%;width:100%;height:2px;background:linear-gradient(90deg,#007AFF,rgba(0,122,255,.1));z-index:0}
+@media(max-width:1024px){.workflow-connector::after{display:none}}
 
-  /* ===== STAT COUNTER ===== */
-  .stat-number {
-    font-variant-numeric: tabular-nums;
-  }
+/* ===== HAMBURGER ===== */
+.hamburger span{display:block;width:24px;height:2px;background:currentColor;transition:all .3s ease;border-radius:2px}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-menu{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.mobile-menu.open{max-height:400px}
 
-  /* ===== EMAIL INPUT GLOW ===== */
-  .email-input:focus {
-    box-shadow: 0 0 0 3px rgba(0,122,255,0.3);
-    border-color: #007AFF;
-  }
+/* ===== WAVE DIVIDERS ===== */
+.wave-divider{position:relative;overflow:hidden}
+.wave-divider svg{display:block;width:100%;height:auto}
+.wave-top svg{transform:rotate(180deg)}
 
-  /* ===== COMPARISON WINNER GLOW ===== */
-  .winner-col {
-    box-shadow: 0 0 60px rgba(0,122,255,0.15);
-  }
-  html:not(.dark) .winner-col {
-    box-shadow: 0 0 40px rgba(0,122,255,0.1);
-  }
+/* ===== BENTO GRID ===== */
+.bento-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto;gap:1rem}
+.bento-lg{grid-column:span 2;grid-row:span 1}
+.bento-tall{grid-row:span 2}
+@media(max-width:1024px){.bento-grid{grid-template-columns:repeat(2,1fr)}.bento-lg{grid-column:span 2}.bento-tall{grid-row:span 1}}
+@media(max-width:640px){.bento-grid{grid-template-columns:1fr}.bento-lg,.bento-tall{grid-column:span 1;grid-row:span 1}}
 
-  /* ===== PULSE RING ===== */
-  .pulse-ring {
-    animation: pulseRing 2s ease-in-out infinite;
-  }
-  @keyframes pulseRing {
-    0% { box-shadow: 0 0 0 0 rgba(0,122,255,0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(0,122,255,0); }
-    100% { box-shadow: 0 0 0 0 rgba(0,122,255,0); }
-  }
+/* ===== VIDEO PLACEHOLDER ===== */
+.video-placeholder{position:relative;cursor:pointer}
+.video-placeholder::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.4);border-radius:inherit;transition:background .3s ease}
+.video-placeholder:hover::after{background:rgba(0,0,0,.2)}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;width:72px;height:72px;border-radius:50%;background:rgba(0,122,255,.9);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 40px rgba(0,122,255,.4);transition:transform .3s ease,box-shadow .3s ease}
+.video-placeholder:hover .play-btn{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 12px 50px rgba(0,122,255,.6)}
 
-  /* ===== PHONE MOCKUP ===== */
-  .phone-mockup {
-    background: linear-gradient(145deg, #1c1c1e, #2c2c2e);
-    border-radius: 40px;
-    padding: 12px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-  }
-  html:not(.dark) .phone-mockup {
-    background: linear-gradient(145deg, #e5e5ea, #f2f2f7);
-    box-shadow: 0 25px 80px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
-  }
-  .phone-screen {
-    background: #000;
-    border-radius: 30px;
-    overflow: hidden;
-    position: relative;
-  }
-  html:not(.dark) .phone-screen {
-    background: #fff;
-  }
-  .phone-notch {
-    width: 120px; height: 28px;
-    background: #000;
-    border-radius: 0 0 18px 18px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 10;
-  }
-  html:not(.dark) .phone-notch {
-    background: #f2f2f7;
-  }
+/* ===== PULSE RING ===== */
+.pulse-ring{animation:pulseRing 2s ease-in-out infinite}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(0,122,255,.4)}70%{box-shadow:0 0 0 15px rgba(0,122,255,0)}100%{box-shadow:0 0 0 0 rgba(0,122,255,0)}}
 
-  /* ===== SCROLL DOWN INDICATOR ===== */
-  .scroll-indicator {
-    animation: scrollBounce 2s ease-in-out infinite;
-  }
-  @keyframes scrollBounce {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(8px); opacity: 0.5; }
-  }
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator{animation:scrollBounce 2s ease-in-out infinite}
+@keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(8px);opacity:.5}}
 
-  /* Form success state */
-  .form-success { animation: successPop 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-  @keyframes successPop {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); opacity: 1; }
-  }
+/* ===== FORM SUCCESS ===== */
+.form-success{animation:successPop .5s cubic-bezier(.4,0,.2,1)}
+@keyframes successPop{0%{transform:scale(.8);opacity:0}50%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+
+/* ===== PRICING TOGGLE ===== */
+.pricing-toggle{position:relative;width:56px;height:28px;border-radius:14px;background:rgba(255,255,255,.1);cursor:pointer;transition:background .3s ease;border:1px solid rgba(255,255,255,.1)}
+.pricing-toggle.active{background:linear-gradient(135deg,#007AFF,#34AADC)}
+.pricing-toggle .toggle-knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.pricing-toggle.active .toggle-knob{transform:translateX(28px)}
+html:not(.dark) .pricing-toggle{background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.1)}
+
+/* ===== STAT COUNTER ===== */
+.stat-number{font-variant-numeric:tabular-nums}
+
+/* ===== EMAIL INPUT ===== */
+.email-input:focus{box-shadow:0 0 0 3px rgba(0,122,255,.3);border-color:#007AFF}
+
+/* ===== WINNER COL ===== */
+.winner-col{box-shadow:0 0 60px rgba(0,122,255,.15)}
+html:not(.dark) .winner-col{box-shadow:0 0 40px rgba(0,122,255,.1)}
+
+/* ===== SMOOTH TRANSITIONS ===== */
+html{transition:background-color .4s ease,color .4s ease}
+
+/* ===== CUSTOM CURSOR ===== */
+.custom-cursor{width:20px;height:20px;border:2px solid #007AFF;border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:99999;transition:transform .15s ease,background .15s ease;mix-blend-mode:difference}
+.custom-cursor.hover{transform:scale(2.5);background:rgba(0,122,255,.15);border-color:#34AADC}
+@media(max-width:768px){.custom-cursor{display:none}}
+
+/* ===== SECTION DIVIDERS ===== */
+.section-divider{position:relative;height:120px;margin-top:-60px;margin-bottom:-60px;z-index:2;pointer-events:none}
 </style>
 </head>
 
 <body class="dark:bg-dark bg-white dark:text-white text-gray-900 font-sans antialiased">
 
-<!-- Noise Overlay -->
+<!-- Fixed Backgrounds -->
 <div class="noise-overlay"></div>
+<div class="gradient-mesh"></div>
+<canvas id="particles-canvas"></canvas>
+
+<!-- Scroll Progress Bar -->
+<div id="scrollProgress"></div>
 
 <!-- Custom Cursor -->
 <div class="custom-cursor" id="cursor"></div>
 
-<!-- ===== NAVBAR ===== -->
-<nav id="navbar" class="fixed top-0 left-0 right-0 z-[9999] transition-all duration-500">
+<!-- ===== STICKY NAVBAR ===== -->
+<nav id="navbar" class="fixed top-[3px] left-0 right-0 z-[9999] transition-all duration-500">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16 sm:h-20">
-      <!-- Logo -->
+    <div class="flex items-center justify-between h-16 sm:h-20 transition-all duration-300" id="navInner">
       <a href="#" class="flex items-center gap-2 group">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-shadow">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
         </div>
         <span class="text-xl font-bold gradient-text">BlueShift</span>
       </a>
-
-      <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-8">
-        <a href="#features" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors magnetic-btn">Features</a>
-        <a href="#how-it-works" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors magnetic-btn">How It Works</a>
-        <a href="#pricing" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors magnetic-btn">Pricing</a>
-        <a href="#faq" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors magnetic-btn">FAQ</a>
+        <a href="#features" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">Features</a>
+        <a href="#how-it-works" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">How It Works</a>
+        <a href="#pricing" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">Pricing</a>
+        <a href="#faq" class="text-sm dark:text-white/60 text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">FAQ</a>
       </div>
-
       <div class="flex items-center gap-3">
-        <!-- Theme Toggle -->
         <button id="themeToggle" class="w-10 h-10 rounded-xl glass flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" aria-label="Toggle theme">
           <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
           <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-yellow-400"></i>
         </button>
-
-        <!-- CTA -->
-        <a href="#cta" class="hidden sm:inline-flex glow-btn text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
-          Get Free Access
-        </a>
-
-        <!-- Mobile Hamburger -->
+        <a href="#cta" class="hidden sm:inline-flex glow-btn text-white text-sm font-semibold px-5 py-2.5 rounded-xl">Get Free Access</a>
         <button id="hamburger" class="md:hidden hamburger flex flex-col gap-1.5 p-2 cursor-pointer" aria-label="Menu">
           <span class="dark:bg-white bg-gray-900"></span>
           <span class="dark:bg-white bg-gray-900"></span>
@@ -424,8 +256,6 @@ tailwind.config = {
         </button>
       </div>
     </div>
-
-    <!-- Mobile Menu -->
     <div id="mobileMenu" class="mobile-menu md:hidden">
       <div class="pb-6 pt-2 flex flex-col gap-4 border-t dark:border-white/10 border-gray-200">
         <a href="#features" class="text-sm dark:text-white/70 text-gray-600 hover:text-blue-500 transition-colors py-2">Features</a>
@@ -438,58 +268,77 @@ tailwind.config = {
   </div>
 </nav>
 
-<!-- ===== HERO SECTION ===== -->
-<section id="hero" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+
+<!-- ========================================== -->
+<!-- ===== SECTION 1: HERO ===== -->
+<!-- ========================================== -->
+<section id="hero" class="relative min-h-screen flex items-center pt-20 overflow-hidden" style="z-index:5">
   <!-- Background Orbs -->
-  <div class="orb w-[500px] h-[500px] bg-blue-500/30 -top-40 -left-40" style="animation-delay: 0s;"></div>
-  <div class="orb w-[400px] h-[400px] bg-imsg-cyan/20 top-1/3 -right-32" style="animation-delay: -7s;"></div>
-  <div class="orb w-[300px] h-[300px] bg-blue-600/20 bottom-20 left-1/4" style="animation-delay: -14s;"></div>
+  <div class="orb w-[500px] h-[500px] bg-blue-500/30 -top-40 -left-40" style="animation-delay:0s"></div>
+  <div class="orb w-[400px] h-[400px] bg-imsg-cyan/20 top-1/3 -right-32" style="animation-delay:-7s"></div>
+  <div class="orb w-[300px] h-[300px] bg-blue-600/20 bottom-20 left-1/4" style="animation-delay:-14s"></div>
 
   <!-- Grid Pattern -->
-  <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle, currentColor 1px, transparent 1px); background-size: 40px 40px;"></div>
+  <div class="absolute inset-0 opacity-[0.03]" style="background-image:radial-gradient(circle,currentColor 1px,transparent 1px);background-size:40px 40px"></div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 relative z-10">
     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
       <!-- Left: Copy -->
       <div class="text-center lg:text-left">
-        <div id="hero-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium dark:text-blue-300 text-blue-600 mb-6 opacity-0">
+        <div class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium dark:text-blue-300 text-blue-600 mb-6">
           <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
           Now available for GoHighLevel
         </div>
 
-        <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-6 opacity-0">
+        <h1 class="reveal reveal-d1 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-6">
           <span class="gradient-text-white">Send iMessage</span><br>
           <span class="gradient-text">from your CRM.</span>
         </h1>
 
-        <p id="hero-sub" class="text-base sm:text-lg lg:text-xl dark:text-white/50 text-gray-500 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed opacity-0">
+        <p class="reveal reveal-d2 text-base sm:text-lg lg:text-xl dark:text-white/50 text-gray-500 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
           Ditch gray bubbles forever. BlueShift connects iMessage to GoHighLevel with 
           <span class="dark:text-white text-gray-900 font-semibold">98% open rates</span>, 
           read receipts, and zero monthly subscriptions.
         </p>
 
         <!-- Opt-in Form -->
-        <form id="hero-form" class="flex flex-col gap-3 max-w-md mx-auto lg:mx-0 mb-6 opacity-0" onsubmit="handleSubmit(event, this)">
+        <form class="reveal reveal-d3 flex flex-col gap-3 max-w-md mx-auto lg:mx-0 mb-6" onsubmit="handleSubmit(event, this)">
           <input type="text" required placeholder="Your name" class="email-input w-full px-5 py-3.5 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
           <div class="flex flex-col sm:flex-row gap-3">
             <input type="email" required placeholder="Email address" class="email-input flex-1 px-5 py-3.5 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
             <input type="tel" required placeholder="Phone number" class="email-input sm:w-40 px-5 py-3.5 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
           </div>
-          <button type="submit" class="glow-btn text-white font-semibold px-6 py-3.5 rounded-xl text-sm whitespace-nowrap magnetic-btn w-full sm:w-auto">
+          <button type="submit" class="glow-btn text-white font-semibold px-6 py-3.5 rounded-xl text-sm whitespace-nowrap w-full sm:w-auto">
             Get Free Access →
           </button>
         </form>
-
-        <p id="hero-note" class="text-xs dark:text-white/30 text-gray-400 opacity-0">
-          Free to start · No credit card required · Self-hosted option available
-        </p>
+        <p class="reveal reveal-d4 text-xs dark:text-white/30 text-gray-400">Free to start · No credit card required · Self-hosted option available</p>
       </div>
 
-      <!-- Right: Phone Mockup -->
-      <div id="hero-phone" class="flex justify-center opacity-0">
-        <div class="phone-mockup w-[280px] sm:w-[300px] transform hover:rotate-1 transition-transform duration-700">
-          <div class="phone-screen" style="aspect-ratio: 9/17;">
-            <!-- Phone Header -->
+      <!-- Right: 3D Parallax Phone Mockup with Floating Bubbles & Badges -->
+      <div class="reveal reveal-d2 flex justify-center relative" id="phoneContainer" style="perspective:1000px">
+        <!-- Floating Badges -->
+        <div class="floating-badge absolute -top-4 -left-4 sm:left-0 z-20 px-4 py-2 rounded-full glass text-xs font-bold dark:text-green-300 text-green-600 border border-green-500/20 shadow-lg" style="animation-delay:0s">
+          ✅ 98% Open Rate
+        </div>
+        <div class="floating-badge absolute top-1/4 -right-4 sm:-right-8 z-20 px-4 py-2 rounded-full glass text-xs font-bold dark:text-blue-300 text-blue-600 border border-blue-500/20 shadow-lg" style="animation-delay:-2s">
+          💬 Blue Bubbles
+        </div>
+        <div class="floating-badge absolute bottom-16 -left-6 sm:-left-8 z-20 px-4 py-2 rounded-full glass text-xs font-bold dark:text-cyan-300 text-cyan-600 border border-cyan-500/20 shadow-lg" style="animation-delay:-4s">
+          🚫 No Monthly Fee
+        </div>
+
+        <!-- Floating iMessage Bubbles -->
+        <div class="absolute top-8 -right-2 sm:right-0 z-10 imsg-bubble-sent text-[11px] floating-badge opacity-80 shadow-xl" style="animation-delay:-1s;max-width:160px">
+          Hey! Special offer just for you 🎉
+        </div>
+        <div class="absolute bottom-24 -right-4 sm:-right-6 z-10 imsg-bubble-recv text-[11px] floating-badge opacity-80 shadow-xl" style="animation-delay:-3s;max-width:140px">
+          I'm interested! 👀
+        </div>
+
+        <!-- Phone with 3D tilt -->
+        <div class="phone-mockup w-[280px] sm:w-[300px] transition-transform duration-300 relative z-10" id="phoneMockup" style="transform-style:preserve-3d">
+          <div class="phone-screen" style="aspect-ratio:9/17">
             <div class="phone-notch"></div>
             <div class="px-4 pt-2 pb-3">
               <div class="flex items-center justify-between mb-1">
@@ -504,38 +353,23 @@ tailwind.config = {
                 <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-medium">iMessage</span>
               </div>
             </div>
-
-            <!-- Chat Messages -->
             <div class="px-3 pb-4 space-y-2.5" id="chatDemo">
-              <div class="flex justify-start">
-                <div class="imsg-bubble-recv text-[13px] chat-msg" data-delay="0">Hey, I saw your ad about the marketing package 👀</div>
-              </div>
-              <div class="flex justify-end">
-                <div class="imsg-bubble-sent text-[13px] chat-msg" data-delay="800">Hey John! Yes, we're running a special this week 🎉</div>
-              </div>
-              <div class="flex justify-end">
-                <div class="imsg-bubble-sent text-[13px] chat-msg" data-delay="1600">Want me to send over the details?</div>
-              </div>
-              <div class="flex justify-start">
-                <div class="imsg-bubble-recv text-[13px] chat-msg" data-delay="2400">Absolutely! That would be great</div>
-              </div>
+              <div class="flex justify-start"><div class="imsg-bubble-recv text-[13px] chat-msg" data-delay="0">Hey, I saw your ad about the marketing package 👀</div></div>
+              <div class="flex justify-end"><div class="imsg-bubble-sent text-[13px] chat-msg" data-delay="800">Hey John! Yes, we're running a special this week 🎉</div></div>
+              <div class="flex justify-end"><div class="imsg-bubble-sent text-[13px] chat-msg" data-delay="1600">Want me to send over the details?</div></div>
+              <div class="flex justify-start"><div class="imsg-bubble-recv text-[13px] chat-msg" data-delay="2400">Absolutely! That would be great</div></div>
               <div class="flex justify-end">
                 <div class="imsg-bubble-sent text-[13px] chat-msg" data-delay="3200">
                   Perfect! Here's the link: <span class="underline">blueshift.io/offer</span><br>
                   <span class="text-[11px] opacity-70 mt-0.5 block">Delivered · Read ✓</span>
                 </div>
               </div>
-              <!-- Typing indicator -->
               <div class="flex justify-start chat-msg" data-delay="4000">
                 <div class="imsg-bubble-recv flex gap-1 items-center py-3 px-4">
-                  <span class="typing-dot"></span>
-                  <span class="typing-dot"></span>
-                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
                 </div>
               </div>
             </div>
-
-            <!-- Input Bar -->
             <div class="absolute bottom-0 left-0 right-0 px-3 py-2 dark:bg-black/80 bg-white/80 backdrop-blur-sm border-t dark:border-white/10 border-gray-200">
               <div class="flex items-center gap-2">
                 <div class="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -560,14 +394,16 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ===== SOCIAL PROOF TICKER ===== -->
-<section class="relative py-8 sm:py-12 border-y dark:border-white/5 border-gray-100 overflow-hidden">
+
+<!-- ========================================== -->
+<!-- ===== SECTION 2: SOCIAL PROOF MARQUEE ===== -->
+<!-- ========================================== -->
+<section class="relative py-8 sm:py-12 border-y dark:border-white/5 border-gray-100 overflow-hidden" style="z-index:5">
   <div class="text-center mb-6 sm:mb-8">
     <p class="text-xs sm:text-sm font-medium dark:text-white/30 text-gray-400 tracking-widest uppercase">Trusted by 200+ agencies worldwide</p>
   </div>
   <div class="relative overflow-hidden">
     <div class="marquee-track">
-      <!-- Repeat items for seamless loop -->
       <div class="flex items-center gap-12 sm:gap-16 px-8">
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="message-square" class="w-5 h-5"></i><span class="text-sm font-semibold">GoHighLevel</span></div>
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="smartphone" class="w-5 h-5"></i><span class="text-sm font-semibold">BlueBubbles</span></div>
@@ -578,7 +414,6 @@ tailwind.config = {
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="zap" class="w-5 h-5"></i><span class="text-sm font-semibold">Spintax Engine</span></div>
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="users" class="w-5 h-5"></i><span class="text-sm font-semibold">Group Chats</span></div>
       </div>
-      <!-- Duplicate for seamless loop -->
       <div class="flex items-center gap-12 sm:gap-16 px-8">
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="message-square" class="w-5 h-5"></i><span class="text-sm font-semibold">GoHighLevel</span></div>
         <div class="flex items-center gap-2 dark:text-white/20 text-gray-300 whitespace-nowrap"><i data-lucide="smartphone" class="w-5 h-5"></i><span class="text-sm font-semibold">BlueBubbles</span></div>
@@ -593,180 +428,247 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ===== PROBLEM SECTION ===== -->
-<section id="problem" class="relative py-20 sm:py-32 overflow-hidden">
+
+<!-- Wave Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full" preserveAspectRatio="none" style="display:block;height:80px">
+    <path d="M0 50C240 0 480 100 720 50C960 0 1200 100 1440 50V100H0V50Z" class="dark:fill-[#060614] fill-gray-50/50"/>
+  </svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 3: PROBLEM/SOLUTION ===== -->
+<!-- ========================================== -->
+<section id="problem" class="relative py-20 sm:py-32 overflow-hidden dark:bg-[#060614] bg-gray-50/50" style="z-index:5">
   <div class="orb w-[400px] h-[400px] bg-red-500/10 top-20 -right-40"></div>
-  <div class="orb w-[300px] h-[300px] bg-blue-500/10 bottom-20 -left-32" style="animation-delay: -10s;"></div>
+  <div class="orb w-[300px] h-[300px] bg-blue-500/10 bottom-20 -left-32" style="animation-delay:-10s"></div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-red-400 mb-4 block">The Problem</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
-        <span class="gradient-text-white">SMS is </span>
-        <span class="text-red-400">dead.</span>
+    <div class="text-center mb-16">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-red-400 mb-4 block">The Problem</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+        <span class="gradient-text-white">SMS is </span><span class="text-red-400">dead.</span>
       </h2>
-      <p class="dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Your messages are getting filtered, ignored, and lost in a sea of spam. It's time to evolve.</p>
+      <p class="reveal reveal-d2 dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Your messages are getting filtered, ignored, and lost in a sea of spam. Drag the slider to see the difference.</p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
-      <!-- SMS Card (Bad) -->
-      <div class="glass-card rounded-2xl p-6 sm:p-8 reveal relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-            <i data-lucide="message-square-dashed" class="w-6 h-6 text-red-400"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-bold dark:text-white text-gray-900">SMS / Green Bubbles</h3>
-            <p class="text-xs dark:text-white/40 text-gray-400">The old way</p>
+    <!-- Before/After Comparison Slider -->
+    <div class="reveal max-w-4xl mx-auto mb-16">
+      <div class="comparison-slider rounded-2xl border dark:border-white/10 border-gray-200 overflow-hidden" id="compSlider" style="height:420px">
+        <!-- SMS Side (Left/Background) -->
+        <div class="absolute inset-0 dark:bg-[#0a0a14] bg-white p-6 sm:p-10 flex flex-col justify-center">
+          <div class="max-w-sm">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center">
+                <i data-lucide="message-square-dashed" class="w-7 h-7 text-red-400"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-red-400">SMS / Green Bubbles</h3>
+                <p class="text-xs dark:text-white/40 text-gray-400">The old way</p>
+              </div>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-start gap-3"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">20-30%</strong> open rates — most go unread</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600">Carrier <strong class="dark:text-white/80 text-gray-800">spam filters</strong> block your messages</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">No read receipts</strong> — you're flying blind</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">10DLC registration</strong> headaches</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600">Green bubbles = <strong class="dark:text-white/80 text-gray-800">looks like spam</strong></span></li>
+            </ul>
+            <div class="mt-6 flex items-center gap-2 text-red-400 text-sm font-semibold">
+              <div class="w-3 h-3 rounded-full bg-green-500"></div> Green bubble zone
+            </div>
           </div>
         </div>
-        <ul class="space-y-3">
-          <li class="flex items-start gap-3">
-            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">20-30%</strong> open rates — most go unread</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600">Carrier <strong class="dark:text-white/80 text-gray-800">spam filters</strong> block your messages</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">No read receipts</strong> — you're flying blind</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">10DLC registration</strong> headaches</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600">Green bubbles = <strong class="dark:text-white/80 text-gray-800">looks like spam</strong></span>
-          </li>
-        </ul>
-      </div>
 
-      <!-- iMessage Card (Good) -->
-      <div class="glass-card rounded-2xl p-6 sm:p-8 reveal relative overflow-hidden winner-col">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-imsg-cyan"></div>
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-            <i data-lucide="message-circle" class="w-6 h-6 text-blue-400"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-bold dark:text-white text-gray-900">iMessage / Blue Bubbles</h3>
-            <p class="text-xs dark:text-white/40 text-gray-400">The BlueShift way</p>
+        <!-- iMessage Side (Right/Overlay) -->
+        <div class="side-right dark:bg-[#050520] bg-blue-50 p-6 sm:p-10 flex flex-col justify-center" id="compRight" style="width:50%">
+          <div class="max-w-sm ml-auto">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                <i data-lucide="message-circle" class="w-7 h-7 text-blue-400"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-blue-400">iMessage / Blue Bubbles</h3>
+                <p class="text-xs dark:text-white/40 text-gray-400">The BlueShift way</p>
+              </div>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">98% open rates</strong> — nearly every message read</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">No spam filters</strong> — direct to inbox</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">Read receipts</strong> + typing indicators</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">Rich media</strong> — links, reactions, voice</span></li>
+              <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i><span class="text-sm dark:text-white/60 text-gray-600">Blue bubbles = <strong class="dark:text-white/80 text-gray-800">trusted & personal</strong></span></li>
+            </ul>
+            <div class="mt-6 flex items-center gap-2 text-blue-400 text-sm font-semibold">
+              <div class="w-3 h-3 rounded-full bg-blue-500"></div> Blue bubble zone
+            </div>
           </div>
         </div>
-        <ul class="space-y-3">
-          <li class="flex items-start gap-3">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">98% open rates</strong> — nearly every message read</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">No spam filters</strong> — direct to inbox</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">Read receipts</strong> + typing indicators</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600"><strong class="dark:text-white/80 text-gray-800">Rich media</strong> — links, reactions, voice</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 shrink-0 mt-0.5"></i>
-            <span class="text-sm dark:text-white/60 text-gray-600">Blue bubbles = <strong class="dark:text-white/80 text-gray-800">trusted & personal</strong></span>
-          </li>
-        </ul>
+
+        <!-- Slider Line & Handle -->
+        <div class="slider-line" id="compLine" style="left:50%"></div>
+        <div class="slider-handle" id="compHandle" style="left:50%">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M8 6l-4 6 4 6M16 6l4 6-4 6"/></svg>
+        </div>
       </div>
     </div>
 
-    <!-- Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mt-12 sm:mt-16">
+    <!-- Animated Stats Counters -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
       <div class="text-center reveal">
-        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="98">0%</div>
+        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="98" data-suffix="%">0%</div>
         <p class="text-xs sm:text-sm dark:text-white/40 text-gray-500 mt-1">Open Rate</p>
       </div>
-      <div class="text-center reveal">
-        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="3.5">0x</div>
+      <div class="text-center reveal reveal-d1">
+        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="3.5" data-suffix="x" data-decimal="true">0x</div>
         <p class="text-xs sm:text-sm dark:text-white/40 text-gray-500 mt-1">More Replies</p>
       </div>
-      <div class="text-center reveal">
-        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="0">$0</div>
+      <div class="text-center reveal reveal-d2">
+        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="0" data-prefix="$" data-suffix="">$0</div>
         <p class="text-xs sm:text-sm dark:text-white/40 text-gray-500 mt-1">Monthly Fee</p>
       </div>
-      <div class="text-center reveal">
-        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="200">0+</div>
+      <div class="text-center reveal reveal-d3">
+        <div class="text-3xl sm:text-4xl font-black gradient-text stat-number" data-target="200" data-suffix="+">0+</div>
         <p class="text-xs sm:text-sm dark:text-white/40 text-gray-500 mt-1">Agencies</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== FEATURES GRID ===== -->
-<section id="features" class="relative py-20 sm:py-32 overflow-hidden">
-  <div class="orb w-[500px] h-[500px] bg-blue-500/10 top-1/4 left-1/3" style="animation-delay: -5s;"></div>
+<!-- Diagonal Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="w-full" style="display:block;height:60px">
+    <path d="M0 60L1440 0V60H0Z" class="dark:fill-dark fill-white"/>
+  </svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 4: VIDEO PLACEHOLDER ===== -->
+<!-- ========================================== -->
+<section class="relative py-16 sm:py-24 overflow-hidden" style="z-index:5">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-10">
+      <h2 class="reveal text-2xl sm:text-3xl font-bold mb-3 gradient-text-white">See it in action</h2>
+      <p class="reveal reveal-d1 dark:text-white/50 text-gray-500 text-sm sm:text-base">Watch how BlueShift transforms your GoHighLevel messaging in under 2 minutes.</p>
+    </div>
+    <div class="reveal reveal-d2 video-placeholder rounded-2xl overflow-hidden aspect-video dark:bg-[#0a0a1a] bg-gray-100 border dark:border-white/10 border-gray-200 relative" onclick="this.innerHTML='<div class=\'flex items-center justify-center h-full text-white/50 text-sm\'>Video coming soon — stay tuned!</div>'">
+      <!-- Dark screenshot mock -->
+      <div class="absolute inset-0 flex items-center justify-center" style="background:linear-gradient(135deg,#050520 0%,#0a0a2e 50%,#050520 100%)">
+        <div class="text-center">
+          <div class="w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" stroke="white" stroke-width="2"/></svg>
+            </div>
+          </div>
+          <p class="text-white/40 text-xs">BlueShift Demo</p>
+        </div>
+      </div>
+      <div class="play-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><polygon points="10,8 16,12 10,16"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Wave Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" class="w-full" style="display:block;height:60px">
+    <path d="M0 0C360 80 720 0 1080 60C1260 80 1380 40 1440 0V80H0V0Z" class="dark:fill-[#060614] fill-gray-50/50"/>
+  </svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 5: FEATURES — BENTO GRID ===== -->
+<!-- ========================================== -->
+<section id="features" class="relative py-20 sm:py-32 overflow-hidden dark:bg-[#060614] bg-gray-50/50" style="z-index:5">
+  <div class="orb w-[500px] h-[500px] bg-blue-500/10 top-1/4 left-1/3" style="animation-delay:-5s"></div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Features</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+    <div class="text-center mb-16">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Features</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
         <span class="gradient-text-white">Everything you need.</span><br>
         <span class="gradient-text">Nothing you don't.</span>
       </h2>
-      <p class="dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Enterprise-grade iMessage integration built specifically for GoHighLevel agencies.</p>
+      <p class="reveal reveal-d2 dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Enterprise-grade iMessage integration built specifically for GoHighLevel agencies.</p>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-      <!-- Feature 1 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-          <i data-lucide="message-circle" class="w-6 h-6 text-blue-400"></i>
+    <div class="bento-grid">
+      <!-- Feature 1 — Large -->
+      <div class="bento-lg reveal glass-card rounded-2xl p-6 sm:p-8 gradient-border group">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
+            <i data-lucide="message-circle" class="w-7 h-7 text-blue-400"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-2 dark:text-white text-gray-900">iMessage + SMS Rollover</h3>
+            <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Sends via iMessage when available, automatically rolls over to SMS when it's not. Never miss a lead. Your contacts see blue bubbles, you see higher conversions.</p>
+          </div>
         </div>
-        <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">iMessage + SMS Rollover</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Sends via iMessage when available, automatically rolls over to SMS when it's not. Never miss a lead.</p>
+        <div class="mt-6 flex gap-2">
+          <span class="px-3 py-1 rounded-full text-[10px] font-medium dark:bg-blue-500/10 bg-blue-50 dark:text-blue-300 text-blue-600">Auto-detect</span>
+          <span class="px-3 py-1 rounded-full text-[10px] font-medium dark:bg-green-500/10 bg-green-50 dark:text-green-300 text-green-600">Fallback SMS</span>
+          <span class="px-3 py-1 rounded-full text-[10px] font-medium dark:bg-purple-500/10 bg-purple-50 dark:text-purple-300 text-purple-600">Zero config</span>
+        </div>
       </div>
 
-      <!-- Feature 2 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-          <i data-lucide="refresh-cw" class="w-6 h-6 text-blue-400"></i>
+      <!-- Feature 2 — Tall -->
+      <div class="bento-tall reveal reveal-d1 glass-card rounded-2xl p-6 gradient-border group flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+            <i data-lucide="refresh-cw" class="w-6 h-6 text-blue-400"></i>
+          </div>
+          <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Two-Way Device Sync</h3>
+          <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Messages sync between your personal device and GHL in real-time. Reply from anywhere — your phone, Mac, or GHL dashboard.</p>
         </div>
-        <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Two-Way Device Sync</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Messages sync between your personal device and GHL in real-time. Reply from anywhere.</p>
+        <div class="mt-4 p-3 rounded-xl dark:bg-white/5 bg-gray-100">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center"><i data-lucide="smartphone" class="w-3 h-3 text-blue-400"></i></div>
+            <div class="h-px flex-1 dark:bg-white/10 bg-gray-200 relative overflow-hidden"><div class="absolute inset-y-0 left-0 w-1/2 bg-blue-500/50" style="animation:shimmer 2s ease infinite"></div></div>
+            <div class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center"><i data-lucide="monitor" class="w-3 h-3 text-blue-400"></i></div>
+          </div>
+          <p class="text-[10px] dark:text-white/30 text-gray-400 text-center">Real-time sync active</p>
+        </div>
       </div>
 
       <!-- Feature 3 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+      <div class="reveal reveal-d2 glass-card rounded-2xl p-6 gradient-border group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
           <i data-lucide="smartphone" class="w-6 h-6 text-blue-400"></i>
         </div>
         <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Unlimited Phones</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Connect as many devices as you want. Scale your outreach without per-phone fees.</p>
+        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Connect as many devices as you want. Scale without per-phone fees.</p>
       </div>
 
       <!-- Feature 4 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+      <div class="reveal reveal-d3 glass-card rounded-2xl p-6 gradient-border group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
           <i data-lucide="volume-2" class="w-6 h-6 text-blue-400"></i>
         </div>
         <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">ElevenLabs Voice</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Send AI-powered voice messages via ElevenLabs TTS. Stand out in every conversation.</p>
+        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Send AI-powered voice messages via ElevenLabs TTS. Stand out.</p>
       </div>
 
-      <!-- Feature 5 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-          <i data-lucide="bot" class="w-6 h-6 text-blue-400"></i>
+      <!-- Feature 5 — Large -->
+      <div class="bento-lg reveal reveal-d1 glass-card rounded-2xl p-6 sm:p-8 gradient-border group">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
+            <i data-lucide="bot" class="w-7 h-7 text-blue-400"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-2 dark:text-white text-gray-900">Conversation AI</h3>
+            <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Native GHL Conversation AI support. Automate responses while keeping the iMessage channel. AI replies arrive as blue bubbles — your leads can't tell the difference.</p>
+          </div>
         </div>
-        <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Conversation AI</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Native GHL Conversation AI support. Automate responses while keeping the iMessage channel.</p>
       </div>
 
       <!-- Feature 6 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+      <div class="reveal reveal-d2 glass-card rounded-2xl p-6 gradient-border group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
           <i data-lucide="workflow" class="w-6 h-6 text-blue-400"></i>
         </div>
         <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Workflow Actions</h3>
@@ -774,53 +676,61 @@ tailwind.config = {
       </div>
 
       <!-- Feature 7 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+      <div class="reveal reveal-d3 glass-card rounded-2xl p-6 gradient-border group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
           <i data-lucide="users" class="w-6 h-6 text-blue-400"></i>
         </div>
         <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Group Chats</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Create and manage group chats directly from your CRM. Perfect for team selling and client groups.</p>
+        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Create and manage group chats directly from your CRM. Perfect for team selling.</p>
       </div>
 
       <!-- Feature 8 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+      <div class="reveal reveal-d4 glass-card rounded-2xl p-6 gradient-border group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
           <i data-lucide="zap" class="w-6 h-6 text-blue-400"></i>
         </div>
         <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Spintax Engine</h3>
         <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Randomize messages with spintax to keep every outbound feeling personal and unique.</p>
       </div>
-
-      <!-- Feature 9 -->
-      <div class="glass-card rounded-2xl p-6 reveal gradient-border">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-          <i data-lucide="shuffle" class="w-6 h-6 text-blue-400"></i>
-        </div>
-        <h3 class="text-lg font-bold mb-2 dark:text-white text-gray-900">Random Server Selection</h3>
-        <p class="text-sm dark:text-white/50 text-gray-500 leading-relaxed">Automatically rotates outbound servers to maximize deliverability and avoid rate limits.</p>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- ===== HOW IT WORKS ===== -->
-<section id="how-it-works" class="relative py-20 sm:py-32 overflow-hidden">
-  <div class="orb w-[400px] h-[400px] bg-imsg-cyan/10 bottom-0 right-0" style="animation-delay: -8s;"></div>
+<style>@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}</style>
+
+
+<!-- Wave Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" class="w-full" style="display:block;height:60px"><path d="M0 80C480 20 960 80 1440 30V0H0V80Z" class="dark:fill-[#060614] fill-gray-50/50"/></svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 6: HOW IT WORKS ===== -->
+<!-- ========================================== -->
+<section id="how-it-works" class="relative py-20 sm:py-32 overflow-hidden" style="z-index:5">
+  <div class="orb w-[400px] h-[400px] bg-imsg-cyan/10 bottom-0 right-0" style="animation-delay:-8s"></div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">How It Works</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+    <div class="text-center mb-16">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">How It Works</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
         <span class="gradient-text-white">Up and running</span><br>
         <span class="gradient-text">in minutes.</span>
       </h2>
-      <p class="dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Four simple steps to transform your CRM messaging forever.</p>
+      <p class="reveal reveal-d2 dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Four simple steps to transform your CRM messaging forever.</p>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
+      <!-- Connecting line (desktop) -->
+      <div class="hidden lg:block absolute top-[56px] left-[12%] right-[12%] h-[2px] z-0" style="background:linear-gradient(90deg,rgba(0,122,255,.1),#007AFF,#34AADC,#007AFF,rgba(0,122,255,.1))"></div>
+      <!-- Animated particle on the line -->
+      <div class="hidden lg:block absolute top-[52px] w-3 h-3 rounded-full bg-blue-400 z-[1] shadow-lg shadow-blue-500/50" style="left:12%;animation:flowParticle 4s ease-in-out infinite"></div>
+      <style>@keyframes flowParticle{0%{left:12%;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:88%;opacity:0}}</style>
+
       <!-- Step 1 -->
-      <div class="relative reveal">
-        <div class="glass-card rounded-2xl p-6 text-center relative z-10">
+      <div class="reveal relative z-10">
+        <div class="glass-card rounded-2xl p-6 text-center">
           <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
             <span class="text-2xl font-black text-white">1</span>
           </div>
@@ -830,8 +740,8 @@ tailwind.config = {
       </div>
 
       <!-- Step 2 -->
-      <div class="relative reveal">
-        <div class="glass-card rounded-2xl p-6 text-center relative z-10">
+      <div class="reveal reveal-d1 relative z-10">
+        <div class="glass-card rounded-2xl p-6 text-center">
           <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
             <span class="text-2xl font-black text-white">2</span>
           </div>
@@ -841,8 +751,8 @@ tailwind.config = {
       </div>
 
       <!-- Step 3 -->
-      <div class="relative reveal">
-        <div class="glass-card rounded-2xl p-6 text-center relative z-10">
+      <div class="reveal reveal-d2 relative z-10">
+        <div class="glass-card rounded-2xl p-6 text-center">
           <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
             <span class="text-2xl font-black text-white">3</span>
           </div>
@@ -852,8 +762,8 @@ tailwind.config = {
       </div>
 
       <!-- Step 4 -->
-      <div class="relative reveal">
-        <div class="glass-card rounded-2xl p-6 text-center relative z-10">
+      <div class="reveal reveal-d3 relative z-10">
+        <div class="glass-card rounded-2xl p-6 text-center">
           <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
             <span class="text-2xl font-black text-white">4</span>
           </div>
@@ -865,108 +775,168 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ===== COMPARISON TABLE ===== -->
-<section id="comparison" class="relative py-20 sm:py-32 overflow-hidden">
-  <div class="orb w-[500px] h-[500px] bg-blue-500/10 top-0 left-1/4" style="animation-delay: -12s;"></div>
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Comparison</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
-        <span class="gradient-text-white">Why agencies</span>
-        <span class="gradient-text"> choose us.</span>
+<!-- Diagonal Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="w-full" style="display:block;height:60px"><path d="M0 0L1440 60V0H0Z" class="dark:fill-[#060614] fill-gray-50/50"/></svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 7: TESTIMONIALS ===== -->
+<!-- ========================================== -->
+<section id="testimonials" class="relative py-20 sm:py-32 overflow-hidden dark:bg-[#060614] bg-gray-50/50" style="z-index:5">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-16">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Testimonials</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+        <span class="gradient-text-white">Loved by</span>
+        <span class="gradient-text"> agency owners.</span>
       </h2>
     </div>
 
-    <div class="glass-card rounded-2xl overflow-hidden reveal">
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[600px]">
-          <thead>
-            <tr class="border-b dark:border-white/10 border-gray-200">
-              <th class="text-left p-4 sm:p-6 text-sm font-semibold dark:text-white/60 text-gray-500">Feature</th>
-              <th class="p-4 sm:p-6 text-center">
-                <div class="inline-flex flex-col items-center">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center mb-1.5 shadow-lg shadow-blue-500/20">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                  </div>
-                  <span class="text-sm font-bold gradient-text">BlueShift</span>
-                </div>
-              </th>
-              <th class="p-4 sm:p-6 text-center">
-                <div class="inline-flex flex-col items-center">
-                  <div class="w-10 h-10 rounded-xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mb-1.5">
-                    <span class="text-sm">🏢</span>
-                  </div>
-                  <span class="text-sm font-bold dark:text-white/60 text-gray-500">Competitors</span>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="text-sm">
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Monthly Subscription</td>
-              <td class="p-4 sm:p-6 text-center"><span class="text-green-400 font-bold text-base">$0</span></td>
-              <td class="p-4 sm:p-6 text-center"><span class="dark:text-white/50 text-gray-500">$29-99/mo/phone</span></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Per-Phone Fees</td>
-              <td class="p-4 sm:p-6 text-center"><span class="text-green-400 font-bold">None</span></td>
-              <td class="p-4 sm:p-6 text-center"><span class="dark:text-white/50 text-gray-500">$15-30/phone</span></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Unlimited Phones</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 inline-block"></i></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Self-Hosted Option</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 inline-block"></i></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Two-Way Device Sync</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 inline-block"></i></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Conversation AI</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><span class="dark:text-white/30 text-gray-400 text-xs">Limited</span></td>
-            </tr>
-            <tr class="border-b dark:border-white/5 border-gray-100">
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Voice Messages (TTS)</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 inline-block"></i></td>
-            </tr>
-            <tr>
-              <td class="p-4 sm:p-6 dark:text-white/70 text-gray-600 font-medium">Group Chats</td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 inline-block"></i></td>
-              <td class="p-4 sm:p-6 text-center"><i data-lucide="x-circle" class="w-5 h-5 text-red-400 inline-block"></i></td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="reveal relative overflow-hidden" id="testimonialCarousel">
+      <div class="testimonial-track" id="testimonialTrack">
+        <!-- Testimonial 1 -->
+        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3">
+          <div class="glass-card rounded-2xl p-6 h-full">
+            <div class="flex items-center gap-1 mb-4">
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+            <p class="text-sm dark:text-white/70 text-gray-600 leading-relaxed mb-6">"We switched from Twilio SMS to BlueShift and our reply rates went from 12% to over 45% literally overnight. The ROI is insane — this single tool paid for itself in the first week."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">MR</div>
+              <div>
+                <p class="text-sm font-semibold dark:text-white text-gray-900">Marcus Rivera</p>
+                <p class="text-xs dark:text-white/40 text-gray-400">Founder, LeadFlow Agency</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3">
+          <div class="glass-card rounded-2xl p-6 h-full">
+            <div class="flex items-center gap-1 mb-4">
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+            <p class="text-sm dark:text-white/70 text-gray-600 leading-relaxed mb-6">"My clients were skeptical about iMessage marketing until they saw the numbers. 98% open rate isn't a gimmick — we see it every single day. BlueShift is now our secret weapon."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-sm font-bold">SK</div>
+              <div>
+                <p class="text-sm font-semibold dark:text-white text-gray-900">Sarah Kim</p>
+                <p class="text-xs dark:text-white/40 text-gray-400">CEO, GrowthPath Digital</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3">
+          <div class="glass-card rounded-2xl p-6 h-full">
+            <div class="flex items-center gap-1 mb-4">
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+            <p class="text-sm dark:text-white/70 text-gray-600 leading-relaxed mb-6">"I was paying $89/mo per phone with our old provider. BlueShift? Zero subscription. I've got 6 phones connected and my total cost went down 70%. Plus the two-way sync is chef's kiss."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white text-sm font-bold">DT</div>
+              <div>
+                <p class="text-sm font-semibold dark:text-white text-gray-900">Derek Thompson</p>
+                <p class="text-xs dark:text-white/40 text-gray-400">Owner, Apex Lead Gen</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 4 -->
+        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3">
+          <div class="glass-card rounded-2xl p-6 h-full">
+            <div class="flex items-center gap-1 mb-4">
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+            <p class="text-sm dark:text-white/70 text-gray-600 leading-relaxed mb-6">"The Conversation AI integration is a game-changer. Our AI assistant responds via iMessage and leads literally think they're texting a real person. Booking rates are through the roof."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-500 flex items-center justify-center text-white text-sm font-bold">JL</div>
+              <div>
+                <p class="text-sm font-semibold dark:text-white text-gray-900">Jessica Lopez</p>
+                <p class="text-xs dark:text-white/40 text-gray-400">Director, Summit Marketing Co</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carousel Controls -->
+      <div class="flex justify-center gap-3 mt-8">
+        <button onclick="moveCarousel(-1)" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-blue-500/10 transition-colors cursor-pointer" aria-label="Previous">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center gap-2" id="carouselDots">
+          <button class="w-2.5 h-2.5 rounded-full bg-blue-500 transition-all cursor-pointer" data-index="0"></button>
+          <button class="w-2.5 h-2.5 rounded-full dark:bg-white/20 bg-gray-300 transition-all cursor-pointer" data-index="1"></button>
+          <button class="w-2.5 h-2.5 rounded-full dark:bg-white/20 bg-gray-300 transition-all cursor-pointer" data-index="2"></button>
+          <button class="w-2.5 h-2.5 rounded-full dark:bg-white/20 bg-gray-300 transition-all cursor-pointer" data-index="3"></button>
+        </div>
+        <button onclick="moveCarousel(1)" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-blue-500/10 transition-colors cursor-pointer" aria-label="Next">
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== PRICING TEASER ===== -->
-<section id="pricing" class="relative py-20 sm:py-32 overflow-hidden">
-  <div class="orb w-[400px] h-[400px] bg-green-500/10 top-1/3 -right-32" style="animation-delay: -3s;"></div>
+
+<!-- Wave Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" class="w-full" style="display:block;height:60px"><path d="M0 80C360 20 720 80 1080 30C1260 10 1380 50 1440 80V0H0V80Z" class="dark:fill-[#060614] fill-gray-50/50"/></svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 8: PRICING ===== -->
+<!-- ========================================== -->
+<section id="pricing" class="relative py-20 sm:py-32 overflow-hidden" style="z-index:5">
+  <div class="orb w-[400px] h-[400px] bg-green-500/10 top-1/3 -right-32" style="animation-delay:-3s"></div>
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Pricing</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+    <div class="text-center">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">Pricing</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
         <span class="gradient-text-white">No subscriptions.</span><br>
         <span class="gradient-text">Pay per message.</span>
       </h2>
-      <p class="dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg mb-12">Stop paying $29/month per phone. With BlueShift, self-hosted users pay zero subscription fees — only a small per-message cost.</p>
+      <p class="reveal reveal-d2 dark:text-white/50 text-gray-500 max-w-2xl mx-auto text-base sm:text-lg mb-8">Stop paying $29/month per phone. With BlueShift, self-hosted users pay zero subscription fees.</p>
+      
+      <!-- Pricing Toggle -->
+      <div class="reveal reveal-d3 flex items-center justify-center gap-4 mb-12">
+        <span class="text-sm dark:text-white/60 text-gray-500" id="toggleLabelMonthly">Monthly</span>
+        <div class="pricing-toggle" id="pricingToggle" onclick="togglePricing()">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="text-sm dark:text-white/60 text-gray-500" id="toggleLabelAnnual">Annual</span>
+        <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-bold" id="savingsBadge" style="opacity:0;transition:opacity .3s ease">SAVE 20%</span>
+      </div>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
       <!-- Self-Hosted -->
-      <div class="glass-card rounded-2xl p-6 sm:p-8 reveal gradient-border">
+      <div class="reveal glass-card rounded-2xl p-6 sm:p-8 gradient-border">
         <div class="flex items-center justify-between mb-6">
           <div>
             <h3 class="text-xl font-bold dark:text-white text-gray-900">Self-Hosted</h3>
@@ -975,8 +945,8 @@ tailwind.config = {
           <div class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">MOST POPULAR</div>
         </div>
         <div class="flex items-baseline gap-1 mb-6">
-          <span class="text-4xl sm:text-5xl font-black gradient-text">$0</span>
-          <span class="dark:text-white/40 text-gray-500 text-sm">/month</span>
+          <span class="text-4xl sm:text-5xl font-black gradient-text" id="selfHostedPrice">$0</span>
+          <span class="dark:text-white/40 text-gray-500 text-sm" id="selfHostedPeriod">/month</span>
         </div>
         <ul class="space-y-3 mb-8">
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-green-400 shrink-0"></i>No monthly subscription</li>
@@ -985,11 +955,11 @@ tailwind.config = {
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-green-400 shrink-0"></i>All features included</li>
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-green-400 shrink-0"></i>Full control & privacy</li>
         </ul>
-        <a href="#cta" class="block w-full glow-btn text-white font-semibold py-3.5 rounded-xl text-center text-sm magnetic-btn">Get Started Free →</a>
+        <a href="#cta" class="block w-full glow-btn text-white font-semibold py-3.5 rounded-xl text-center text-sm">Get Started Free →</a>
       </div>
 
       <!-- Hosted VM -->
-      <div class="glass-card rounded-2xl p-6 sm:p-8 reveal gradient-border">
+      <div class="reveal reveal-d1 glass-card rounded-2xl p-6 sm:p-8 gradient-border">
         <div class="flex items-center justify-between mb-6">
           <div>
             <h3 class="text-xl font-bold dark:text-white text-gray-900">Hosted VM</h3>
@@ -998,8 +968,8 @@ tailwind.config = {
           <div class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold">HANDS-FREE</div>
         </div>
         <div class="flex items-baseline gap-1 mb-6">
-          <span class="text-4xl sm:text-5xl font-black gradient-text">$—</span>
-          <span class="dark:text-white/40 text-gray-500 text-sm">/month</span>
+          <span class="text-4xl sm:text-5xl font-black gradient-text" id="hostedPrice">$—</span>
+          <span class="dark:text-white/40 text-gray-500 text-sm" id="hostedPeriod">/month</span>
         </div>
         <ul class="space-y-3 mb-8">
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i>Managed Mac VM included</li>
@@ -1008,24 +978,32 @@ tailwind.config = {
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i>All features included</li>
           <li class="flex items-center gap-3 text-sm dark:text-white/60 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i>Zero hardware maintenance</li>
         </ul>
-        <a href="#cta" class="block w-full py-3.5 rounded-xl text-center text-sm font-semibold border dark:border-white/10 border-gray-200 dark:text-white text-gray-700 hover:border-blue-500/50 transition-colors magnetic-btn">Contact for Pricing →</a>
+        <a href="#cta" class="block w-full py-3.5 rounded-xl text-center text-sm font-semibold border dark:border-white/10 border-gray-200 dark:text-white text-gray-700 hover:border-blue-500/50 transition-colors">Contact for Pricing →</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== FAQ SECTION ===== -->
-<section id="faq" class="relative py-20 sm:py-32 overflow-hidden">
+
+<!-- Diagonal Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="w-full" style="display:block;height:60px"><path d="M0 60L1440 0V60H0Z" class="dark:fill-[#060614] fill-gray-50/50"/></svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 9: FAQ ===== -->
+<!-- ========================================== -->
+<section id="faq" class="relative py-20 sm:py-32 overflow-hidden dark:bg-[#060614] bg-gray-50/50" style="z-index:5">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 reveal">
-      <span class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">FAQ</span>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
+    <div class="text-center mb-16">
+      <span class="reveal text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-400 mb-4 block">FAQ</span>
+      <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
         <span class="gradient-text-white">Got questions?</span>
       </h2>
     </div>
 
     <div class="space-y-3 reveal" id="faqContainer">
-      <!-- FAQ 1 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">Do I need a Mac to use BlueShift?</span>
@@ -1035,8 +1013,6 @@ tailwind.config = {
           <p class="text-sm dark:text-white/50 text-gray-500 pb-5 sm:pb-6 leading-relaxed">Yes, iMessage requires a Mac (or macOS VM) running BlueBubbles as the bridge. You can use your own Mac mini, or choose our hosted VM option where we provide the hardware for you — zero maintenance required.</p>
         </div>
       </div>
-
-      <!-- FAQ 2 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">What happens if the contact doesn't have iMessage?</span>
@@ -1046,8 +1022,6 @@ tailwind.config = {
           <p class="text-sm dark:text-white/50 text-gray-500 pb-5 sm:pb-6 leading-relaxed">BlueShift automatically detects iMessage availability. If a contact doesn't have iMessage, the message rolls over to standard SMS through your GHL phone number. You'll never miss a lead.</p>
         </div>
       </div>
-
-      <!-- FAQ 3 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">Is there a limit on messages?</span>
@@ -1057,8 +1031,6 @@ tailwind.config = {
           <p class="text-sm dark:text-white/50 text-gray-500 pb-5 sm:pb-6 leading-relaxed">There's no hard cap on messages. Each device supports up to 50 new contacts per day to maintain deliverability and avoid Apple rate limits. You can add more devices for higher volume.</p>
         </div>
       </div>
-
-      <!-- FAQ 4 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">How does pricing work?</span>
@@ -1068,8 +1040,6 @@ tailwind.config = {
           <p class="text-sm dark:text-white/50 text-gray-500 pb-5 sm:pb-6 leading-relaxed">Self-hosted users pay $0/month — just a small per-message fee. No per-phone charges, no seat limits. The hosted VM option includes a monthly hosting fee plus per-message costs. Either way, it's a fraction of what competitors charge.</p>
         </div>
       </div>
-
-      <!-- FAQ 5 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">Does it work with GoHighLevel workflows?</span>
@@ -1079,8 +1049,6 @@ tailwind.config = {
           <p class="text-sm dark:text-white/50 text-gray-500 pb-5 sm:pb-6 leading-relaxed">Absolutely. BlueShift includes custom workflow actions: check iMessage availability, send iMessages, and wait for replies — all natively inside GHL workflows. It also supports Conversation AI for automated responses.</p>
         </div>
       </div>
-
-      <!-- FAQ 6 -->
       <div class="faq-item glass-card rounded-xl overflow-hidden">
         <button class="faq-toggle w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer" onclick="toggleFaq(this)">
           <span class="text-sm sm:text-base font-semibold dark:text-white text-gray-900 pr-4">Can I use my personal iMessage and keep it synced?</span>
@@ -1094,64 +1062,67 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ===== FINAL CTA ===== -->
-<section id="cta" class="relative py-20 sm:py-32 overflow-hidden">
-  <!-- Decorative Elements -->
-  <div class="orb w-[600px] h-[600px] bg-blue-500/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style="animation-delay: -4s;"></div>
-  <div class="orb w-[300px] h-[300px] bg-imsg-cyan/10 top-10 left-10" style="animation-delay: -9s;"></div>
-  <div class="orb w-[300px] h-[300px] bg-blue-600/10 bottom-10 right-10" style="animation-delay: -15s;"></div>
+
+<!-- Wave Divider -->
+<div style="z-index:5;position:relative">
+  <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" class="w-full" style="display:block;height:60px"><path d="M0 0C360 80 720 0 1080 60C1260 80 1380 40 1440 0V80H0V0Z" class="dark:fill-dark fill-white"/></svg>
+</div>
+
+
+<!-- ========================================== -->
+<!-- ===== SECTION 10: FINAL CTA ===== -->
+<!-- ========================================== -->
+<section id="cta" class="relative py-20 sm:py-32 overflow-hidden" style="z-index:5">
+  <div class="orb w-[600px] h-[600px] bg-blue-500/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style="animation-delay:-4s"></div>
+  <div class="orb w-[300px] h-[300px] bg-imsg-cyan/10 top-10 left-10" style="animation-delay:-9s"></div>
+  <div class="orb w-[300px] h-[300px] bg-blue-600/10 bottom-10 right-10" style="animation-delay:-15s"></div>
 
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-    <div class="reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium dark:text-blue-300 text-blue-600 mb-6">
-        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-        Limited free access spots available
-      </div>
-
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6 leading-tight">
-        <span class="gradient-text-white">Stop losing leads to</span><br>
-        <span class="gradient-text">green bubbles.</span>
-      </h2>
-
-      <p class="dark:text-white/50 text-gray-500 max-w-xl mx-auto text-base sm:text-lg mb-10 leading-relaxed">
-        Join 200+ agencies already using iMessage to close more deals. Get free access to BlueShift and transform your outreach.
-      </p>
-
-      <!-- Opt-in Form -->
-      <form id="cta-form" class="flex flex-col gap-3 max-w-md mx-auto mb-4" onsubmit="handleSubmit(event, this)">
-        <input type="text" required placeholder="Your name" class="email-input w-full px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <input type="email" required placeholder="Email address" class="email-input flex-1 px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
-          <input type="tel" required placeholder="Phone number" class="email-input sm:w-40 px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
-        </div>
-        <button type="submit" class="glow-btn text-white font-semibold px-8 py-4 rounded-xl text-sm whitespace-nowrap magnetic-btn pulse-ring w-full sm:w-auto">
-          Get Free Access →
-        </button>
-      </form>
-
-      <p class="text-xs dark:text-white/30 text-gray-400">🔒 No spam. Unsubscribe anytime. Your email is safe with us.</p>
+    <div class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium dark:text-blue-300 text-blue-600 mb-6">
+      <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+      Limited free access spots available
     </div>
+
+    <h2 class="reveal reveal-d1 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6 leading-tight">
+      <span class="gradient-text-white">Stop losing leads to</span><br>
+      <span class="gradient-text">green bubbles.</span>
+    </h2>
+
+    <p class="reveal reveal-d2 dark:text-white/50 text-gray-500 max-w-xl mx-auto text-base sm:text-lg mb-10 leading-relaxed">
+      Join 200+ agencies already using iMessage to close more deals. Get free access to BlueShift and transform your outreach.
+    </p>
+
+    <!-- Opt-in Form -->
+    <form class="reveal reveal-d3 flex flex-col gap-3 max-w-md mx-auto mb-4" onsubmit="handleSubmit(event, this)">
+      <input type="text" required placeholder="Your name" class="email-input w-full px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input type="email" required placeholder="Email address" class="email-input flex-1 px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
+        <input type="tel" required placeholder="Phone number" class="email-input sm:w-40 px-5 py-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/10 border-gray-200 dark:text-white text-gray-900 text-sm focus:outline-none transition-all placeholder:text-gray-400">
+      </div>
+      <button type="submit" class="glow-btn text-white font-semibold px-8 py-4 rounded-xl text-sm whitespace-nowrap pulse-ring w-full sm:w-auto">
+        Get Free Access →
+      </button>
+    </form>
+    <p class="reveal reveal-d4 text-xs dark:text-white/30 text-gray-400">🔒 No spam. Unsubscribe anytime. Your email is safe with us.</p>
   </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
-<footer class="relative border-t dark:border-white/5 border-gray-100 py-12 sm:py-16">
+
+<!-- ========================================== -->
+<!-- ===== SECTION 11: FOOTER ===== -->
+<!-- ========================================== -->
+<footer class="relative border-t dark:border-white/5 border-gray-100 py-12 sm:py-16" style="z-index:5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-12">
-      <!-- Brand -->
       <div class="sm:col-span-2 lg:col-span-1">
         <a href="#" class="flex items-center gap-2 mb-4">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-imsg-cyan flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
           </div>
           <span class="text-xl font-bold gradient-text">BlueShift</span>
         </a>
         <p class="text-sm dark:text-white/40 text-gray-500 leading-relaxed">iMessage integration for GoHighLevel. Send blue bubbles, close more deals.</p>
       </div>
-
-      <!-- Product -->
       <div>
         <h4 class="text-sm font-semibold dark:text-white text-gray-900 mb-4">Product</h4>
         <ul class="space-y-2.5">
@@ -1161,8 +1132,6 @@ tailwind.config = {
           <li><a href="#faq" class="text-sm dark:text-white/40 text-gray-500 hover:text-blue-500 transition-colors">FAQ</a></li>
         </ul>
       </div>
-
-      <!-- Resources -->
       <div>
         <h4 class="text-sm font-semibold dark:text-white text-gray-900 mb-4">Resources</h4>
         <ul class="space-y-2.5">
@@ -1172,8 +1141,6 @@ tailwind.config = {
           <li><a href="#" class="text-sm dark:text-white/40 text-gray-500 hover:text-blue-500 transition-colors">Changelog</a></li>
         </ul>
       </div>
-
-      <!-- Legal -->
       <div>
         <h4 class="text-sm font-semibold dark:text-white text-gray-900 mb-4">Legal</h4>
         <ul class="space-y-2.5">
@@ -1183,7 +1150,6 @@ tailwind.config = {
         </ul>
       </div>
     </div>
-
     <div class="border-t dark:border-white/5 border-gray-100 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <p class="text-xs dark:text-white/30 text-gray-400">© 2025 BlueShift by CuratedConnector. Naples Curated LLC. All rights reserved.</p>
       <div class="flex items-center gap-4">
@@ -1195,48 +1161,100 @@ tailwind.config = {
   </div>
 </footer>
 
+
+<!-- ========================================== -->
 <!-- ===== JAVASCRIPT ===== -->
+<!-- ========================================== -->
 <script>
-// ===== INIT LUCIDE ICONS =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   lucide.createIcons();
   initAll();
 });
 
 function initAll() {
+  initParticles();
+  initScrollProgress();
   initCursor();
   initTheme();
   initNavbar();
   initMobileMenu();
-  initHeroAnimations();
+  initRevealSystem();
   initChatDemo();
-  initScrollReveal();
-  initMagneticButtons();
+  initStatCounters();
+  initComparisonSlider();
+  initTestimonialCarousel();
+  initPhone3D();
+  initRippleButtons();
+}
+
+// ===== PARTICLE BACKGROUND =====
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = window.innerWidth < 768 ? 30 : 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 0.5,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.5 + 0.1
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const isDark = document.documentElement.classList.contains('dark');
+    particles.forEach(p => {
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = isDark
+        ? `rgba(0, 122, 255, ${p.opacity})`
+        : `rgba(0, 122, 255, ${p.opacity * 0.5})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ===== SCROLL PROGRESS BAR =====
+function initScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (window.scrollY / h * 100) + '%';
+  });
 }
 
 // ===== CUSTOM CURSOR =====
 function initCursor() {
   const cursor = document.getElementById('cursor');
   if (!cursor || window.innerWidth < 768) return;
-
-  let mouseX = 0, mouseY = 0;
-  let cursorX = 0, cursorY = 0;
-
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
-  function animateCursor() {
-    cursorX += (mouseX - cursorX) * 0.15;
-    cursorY += (mouseY - cursorY) * 0.15;
-    cursor.style.left = cursorX - 10 + 'px';
-    cursor.style.top = cursorY - 10 + 'px';
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
-
-  // Hover effect
+  let mx = 0, my = 0, cx = 0, cy = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop() {
+    cx += (mx - cx) * 0.15;
+    cy += (my - cy) * 0.15;
+    cursor.style.left = cx - 10 + 'px';
+    cursor.style.top = cy - 10 + 'px';
+    requestAnimationFrame(loop);
+  })();
   document.querySelectorAll('a, button, input, .glass-card, .faq-toggle').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
@@ -1247,37 +1265,27 @@ function initCursor() {
 function initTheme() {
   const toggle = document.getElementById('themeToggle');
   const html = document.documentElement;
-
-  // Check saved preference
-  const saved = localStorage.getItem('theme');
-  if (saved === 'light') {
-    html.classList.remove('dark');
-  } else {
-    html.classList.add('dark');
-  }
-
+  if (localStorage.getItem('theme') === 'light') html.classList.remove('dark');
+  else html.classList.add('dark');
   toggle.addEventListener('click', () => {
     html.classList.toggle('dark');
     localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-    // Re-init lucide for icon swap
     lucide.createIcons();
   });
 }
 
-// ===== NAVBAR SCROLL =====
+// ===== NAVBAR SCROLL (shrink + blur) =====
 function initNavbar() {
   const nav = document.getElementById('navbar');
-  let lastScroll = 0;
-
+  const inner = document.getElementById('navInner');
   window.addEventListener('scroll', () => {
-    const scroll = window.scrollY;
-    if (scroll > 50) {
+    if (window.scrollY > 50) {
       nav.classList.add('glass');
-      nav.style.padding = '0';
+      if (inner) inner.style.height = '56px';
     } else {
       nav.classList.remove('glass');
+      if (inner) inner.style.height = '';
     }
-    lastScroll = scroll;
   });
 }
 
@@ -1285,154 +1293,228 @@ function initNavbar() {
 function initMobileMenu() {
   const hamburger = document.getElementById('hamburger');
   const menu = document.getElementById('mobileMenu');
-
   hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     menu.classList.toggle('open');
   });
+  menu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    menu.classList.remove('open');
+  }));
+}
 
-  // Close on link click
-  menu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      menu.classList.remove('open');
+// ===== REVEAL SYSTEM (IntersectionObserver — bulletproof) =====
+function initRevealSystem() {
+  const els = document.querySelectorAll('.reveal');
+  els.forEach(el => el.classList.add('will-reveal'));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
     });
-  });
-}
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-// ===== HERO ANIMATIONS =====
-function initHeroAnimations() {
-  const tl = gsap.timeline({ defaults: { ease: 'power3.out' }});
+  els.forEach(el => observer.observe(el));
 
-  tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.6, delay: 0.2 })
-    .to('#hero-title', { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
-    .to('#hero-sub', { opacity: 1, y: 0, duration: 0.6 }, '-=0.5')
-    .to('#hero-form', { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-    .to('#hero-note', { opacity: 1, duration: 0.4 }, '-=0.3')
-    .to('#hero-phone', { opacity: 1, x: 0, duration: 1, ease: 'power2.out' }, '-=0.8');
-}
-
-// ===== CHAT DEMO ANIMATION =====
-function initChatDemo() {
-  const messages = document.querySelectorAll('.chat-msg');
-  messages.forEach(msg => {
-    msg.style.opacity = '0';
-    msg.style.transform = 'translateY(10px)';
-  });
-
-  function showMessages() {
-    messages.forEach((msg, i) => {
-      const delay = parseInt(msg.dataset.delay) || 0;
-      setTimeout(() => {
-        msg.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-        msg.style.opacity = '1';
-        msg.style.transform = 'translateY(0)';
-      }, delay + 1000); // offset by hero animation time
+  // GSAP enhancement (non-blocking)
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('section').forEach(sec => {
+      sec.querySelectorAll('.orb').forEach(orb => {
+        gsap.to(orb, {
+          y: -60,
+          scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 1 }
+        });
+      });
     });
   }
+}
 
-  showMessages();
-
-  // Loop the animation
-  setInterval(() => {
-    messages.forEach(msg => {
-      msg.style.transition = 'all 0.3s ease';
-      msg.style.opacity = '0';
-      msg.style.transform = 'translateY(10px)';
+// ===== CHAT DEMO =====
+function initChatDemo() {
+  const msgs = document.querySelectorAll('.chat-msg');
+  msgs.forEach(m => { m.style.opacity = '0'; m.style.transform = 'translateY(10px)'; });
+  function show() {
+    msgs.forEach(m => {
+      const delay = parseInt(m.dataset.delay) || 0;
+      setTimeout(() => {
+        m.style.transition = 'all .4s cubic-bezier(.4,0,.2,1)';
+        m.style.opacity = '1';
+        m.style.transform = 'translateY(0)';
+      }, delay + 1000);
     });
-    setTimeout(showMessages, 500);
+  }
+  show();
+  setInterval(() => {
+    msgs.forEach(m => { m.style.transition = 'all .3s ease'; m.style.opacity = '0'; m.style.transform = 'translateY(10px)'; });
+    setTimeout(show, 500);
   }, 12000);
 }
 
-// ===== SCROLL REVEAL =====
-function initScrollReveal() {
-  gsap.registerPlugin(ScrollTrigger);
+// ===== STAT COUNTERS =====
+function initStatCounters() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseFloat(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const isDecimal = el.dataset.decimal === 'true';
+        const duration = 2000;
+        const start = performance.now();
 
-  // Reveal elements
-  document.querySelectorAll('.reveal').forEach(el => {
-    gsap.fromTo(el,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          toggleActions: 'play none none none'
-        }
-      }
-    );
-  });
-
-  // Stat counters
-  document.querySelectorAll('.stat-number').forEach(stat => {
-    const target = parseFloat(stat.dataset.target);
-    const text = stat.textContent;
-    const suffix = text.replace(/[0-9.]/g, '');
-
-    ScrollTrigger.create({
-      trigger: stat,
-      start: 'top 85%',
-      onEnter: () => {
-        gsap.to({ val: 0 }, {
-          val: target,
-          duration: 2,
-          ease: 'power2.out',
-          onUpdate: function() {
-            const v = this.targets()[0].val;
-            if (target === 0) {
-              stat.textContent = '$0';
-            } else if (target % 1 !== 0) {
-              stat.textContent = v.toFixed(1) + suffix;
-            } else {
-              stat.textContent = Math.round(v) + suffix;
-            }
+        function tick(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const val = target * eased;
+          if (target === 0) {
+            el.textContent = prefix + '0' + suffix;
+          } else if (isDecimal) {
+            el.textContent = prefix + val.toFixed(1) + suffix;
+          } else {
+            el.textContent = prefix + Math.round(val) + suffix;
           }
-        });
-      },
-      once: true
-    });
-  });
-
-  // Feature cards stagger
-  gsap.utils.toArray('#features .glass-card').forEach((card, i) => {
-    gsap.fromTo(card,
-      { opacity: 0, y: 40, scale: 0.95 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        delay: i * 0.08,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 90%',
-          toggleActions: 'play none none none'
+          if (progress < 1) requestAnimationFrame(tick);
         }
+        requestAnimationFrame(tick);
+        observer.unobserve(el);
       }
-    );
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-number').forEach(el => observer.observe(el));
+}
+
+// ===== COMPARISON SLIDER =====
+function initComparisonSlider() {
+  const slider = document.getElementById('compSlider');
+  if (!slider) return;
+  const handle = document.getElementById('compHandle');
+  const line = document.getElementById('compLine');
+  const right = document.getElementById('compRight');
+  let isDragging = false;
+
+  function setPosition(x) {
+    const rect = slider.getBoundingClientRect();
+    let pct = ((x - rect.left) / rect.width) * 100;
+    pct = Math.max(5, Math.min(95, pct));
+    handle.style.left = pct + '%';
+    line.style.left = pct + '%';
+    right.style.width = (100 - pct) + '%';
+  }
+
+  function onDown(e) {
+    isDragging = true;
+    e.preventDefault();
+    setPosition(e.touches ? e.touches[0].clientX : e.clientX);
+  }
+  function onMove(e) {
+    if (!isDragging) return;
+    setPosition(e.touches ? e.touches[0].clientX : e.clientX);
+  }
+  function onUp() { isDragging = false; }
+
+  slider.addEventListener('mousedown', onDown);
+  slider.addEventListener('touchstart', onDown, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+}
+
+// ===== TESTIMONIAL CAROUSEL =====
+let carouselIndex = 0;
+let carouselAuto;
+
+function initTestimonialCarousel() {
+  updateCarousel();
+  carouselAuto = setInterval(() => moveCarousel(1), 5000);
+  document.querySelectorAll('#carouselDots button').forEach(dot => {
+    dot.addEventListener('click', () => {
+      carouselIndex = parseInt(dot.dataset.index);
+      updateCarousel();
+      resetAutoCarousel();
+    });
   });
 }
 
-// ===== MAGNETIC BUTTONS =====
-function initMagneticButtons() {
-  if (window.innerWidth < 768) return;
+function moveCarousel(dir) {
+  const total = document.querySelectorAll('#testimonialTrack > div').length;
+  const visible = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+  const maxIndex = total - visible;
+  carouselIndex = Math.max(0, Math.min(maxIndex, carouselIndex + dir));
+  updateCarousel();
+  resetAutoCarousel();
+}
 
-  document.querySelectorAll('.magnetic-btn').forEach(btn => {
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
-    });
+function updateCarousel() {
+  const track = document.getElementById('testimonialTrack');
+  const cards = document.querySelectorAll('#testimonialTrack > div');
+  if (!cards.length) return;
+  const cardWidth = cards[0].offsetWidth;
+  track.style.transform = `translateX(-${carouselIndex * cardWidth}px)`;
+  document.querySelectorAll('#carouselDots button').forEach((dot, i) => {
+    dot.className = i === carouselIndex
+      ? 'w-2.5 h-2.5 rounded-full bg-blue-500 transition-all cursor-pointer'
+      : 'w-2.5 h-2.5 rounded-full dark:bg-white/20 bg-gray-300 transition-all cursor-pointer';
+  });
+}
 
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = 'translate(0, 0)';
+function resetAutoCarousel() {
+  clearInterval(carouselAuto);
+  carouselAuto = setInterval(() => moveCarousel(1), 5000);
+}
+
+// ===== 3D PHONE PARALLAX =====
+function initPhone3D() {
+  const container = document.getElementById('phoneContainer');
+  const phone = document.getElementById('phoneMockup');
+  if (!container || !phone || window.innerWidth < 768) return;
+
+  container.addEventListener('mousemove', e => {
+    const rect = container.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    phone.style.transform = `rotateY(${x * 12}deg) rotateX(${-y * 8}deg)`;
+  });
+  container.addEventListener('mouseleave', () => {
+    phone.style.transform = 'rotateY(0deg) rotateX(0deg)';
+  });
+}
+
+// ===== RIPPLE EFFECT ON GLOW BUTTONS =====
+function initRippleButtons() {
+  document.querySelectorAll('.glow-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+      const rect = this.getBoundingClientRect();
+      ripple.style.left = (e.clientX - rect.left) + 'px';
+      ripple.style.top = (e.clientY - rect.top) + 'px';
+      ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
     });
   });
+}
+
+// ===== PRICING TOGGLE =====
+let pricingAnnual = false;
+function togglePricing() {
+  pricingAnnual = !pricingAnnual;
+  const toggle = document.getElementById('pricingToggle');
+  const badge = document.getElementById('savingsBadge');
+  toggle.classList.toggle('active', pricingAnnual);
+  badge.style.opacity = pricingAnnual ? '1' : '0';
+  document.getElementById('selfHostedPrice').textContent = '$0';
+  document.getElementById('selfHostedPeriod').textContent = pricingAnnual ? '/year' : '/month';
+  document.getElementById('hostedPrice').textContent = '$—';
+  document.getElementById('hostedPeriod').textContent = pricingAnnual ? '/year' : '/month';
 }
 
 // ===== FAQ ACCORDION =====
@@ -1441,16 +1523,9 @@ function toggleFaq(btn) {
   const answer = item.querySelector('.faq-answer');
   const chevron = item.querySelector('.faq-chevron');
   const isOpen = answer.classList.contains('open');
-
-  // Close all
   document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
   document.querySelectorAll('.faq-chevron').forEach(c => c.classList.remove('open'));
-
-  // Toggle current
-  if (!isOpen) {
-    answer.classList.add('open');
-    chevron.classList.add('open');
-  }
+  if (!isOpen) { answer.classList.add('open'); chevron.classList.add('open'); }
 }
 
 // ===== FORM HANDLER =====
@@ -1458,33 +1533,23 @@ function handleSubmit(e, form) {
   e.preventDefault();
   const email = form.querySelector('input[type="email"]').value;
   const btn = form.querySelector('button');
-  const originalText = btn.innerHTML;
-
-  // Simulate submission
   btn.innerHTML = '<span class="inline-flex items-center gap-2"><svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"/><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" class="opacity-75"/></svg> Sending...</span>';
   btn.disabled = true;
-
   setTimeout(() => {
     form.innerHTML = `
       <div class="form-success flex items-center gap-3 px-6 py-4 rounded-xl bg-green-500/10 border border-green-500/20 w-full">
         <svg class="w-6 h-6 text-green-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <div>
-          <p class="text-sm font-semibold dark:text-white text-gray-900">You're on the list! 🎉</p>
-          <p class="text-xs dark:text-white/50 text-gray-500">We'll reach out to ${email} soon.</p>
-        </div>
-      </div>
-    `;
+        <div><p class="text-sm font-semibold dark:text-white text-gray-900">You're on the list! 🎉</p><p class="text-xs dark:text-white/50 text-gray-500">We'll reach out to ${email} soon.</p></div>
+      </div>`;
   }, 1500);
 }
 
 // ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
     e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
 </script>
